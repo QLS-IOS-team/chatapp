@@ -46,9 +46,46 @@ struct ContentView: View {
     }
 }
 
+struct AppContentView: View {
+
+    @State var signInSuccess = false
+    @State var showview = false
+    @State var username: String = ""
+    @State var password: String = ""
+    var body: some View {
+        NavigationView {
+            ZStack{
+                Image("qls").position(x:180,y:120)
+                VStack {
+                    Text("Welcome to the user log in page").foregroundColor(Color.blue)
+                    HStack {
+                        Text("Username:")
+                        TextField("", text: $username)
+                    }.padding()
+
+                    HStack {
+                        Text("Password:")
+                        TextField("", text: $password)
+                    }.padding()
+                    
+                    Button(action: {
+                        self.showview = true
+                    }) {
+                        Text("sign in")
+                    }
+                    NavigationLink(destination: ContentView()
+                    .environmentObject(ChatController()), isActive: $showview) {
+                        EmptyView()
+                    }
+                }
+            }
+        }
+        
+    }
+}
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
-        .environmentObject(ChatController())
+        AppContentView()
     }
 }

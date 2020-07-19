@@ -50,29 +50,35 @@ struct AppContentView: View {
 
     @State var signInSuccess = false
     @State var showview = false
+    @State var clickregister = false
     @State var username: String = ""
     @State var password: String = ""
     var body: some View {
         NavigationView {
             ZStack{
-                Image("qls").position(x:180,y:120)
+                Image("qls").resizable().scaledToFit().position(x:187,y:10)
                 VStack {
-                    Text("Welcome to the user log in page").foregroundColor(Color.blue)
+                    Text("Welcome to the user log in page").foregroundColor(Color.blue).padding(EdgeInsets.init(top: 120, leading: 0, bottom: 10, trailing: 0))
                     HStack {
-                        Text("Username:")
-                        TextField("", text: $username)
+                        Text("Username").font(.callout).bold().padding(EdgeInsets.init(top: 0, leading: 14, bottom: 0, trailing: 0))
+                        TextField("", text: $username).textFieldStyle(RoundedBorderTextFieldStyle())
                     }.padding()
 
                     HStack {
-                        Text("Password:")
-                        TextField("", text: $password)
+                        Text("Password ").font(.callout).bold().padding(EdgeInsets.init(top: 0, leading: 14, bottom: 0, trailing: 0))
+                        TextField("", text: $password).textFieldStyle(RoundedBorderTextFieldStyle())
                     }.padding()
                     
                     Button(action: {
                         self.showview = true
                     }) {
-                        Text("sign in")
-                    }
+                        Text("Log in")
+                    }.padding(EdgeInsets.init(top: 0, leading: 0, bottom: 30, trailing: 0))
+                    Button(action: {
+                        self.clickregister = true
+                    }) {
+                        Text("Register")
+                    }.padding(EdgeInsets.init(top: 0, leading: 0, bottom: 30, trailing: 0))
                     NavigationLink(destination: ContentView()
                     .environmentObject(ChatController()), isActive: $showview) {
                         EmptyView()
@@ -84,8 +90,24 @@ struct AppContentView: View {
     }
 }
 
+struct register_page: View{
+    @State private var offsetposition = CGSize.zero
+    var body: some View{
+        ZStack{
+            Text("Welcome to the registration page").bold().position(x:190,y:90).font(.custom("Didot", size: 30))
+            Image("arrow")
+                .resizable()
+                .scaledToFit()
+                .animation(.spring())
+                .padding(EdgeInsets.init(top: 30, leading: 14, bottom: 0, trailing: 0)).offset(x: offsetposition.width).gesture(DragGesture().onChanged{ value in self.offsetposition = value.translation}
+            .onEnded{ value in self.offsetposition = CGSize.zero}
+            )
+        }.frame(maxWidth: .infinity)
+    }
+}
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        AppContentView()
+        register_page()
     }
 }

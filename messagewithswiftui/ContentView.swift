@@ -83,6 +83,9 @@ struct AppContentView: View {
                     .environmentObject(ChatController()), isActive: $showview) {
                         EmptyView()
                     }
+                    NavigationLink(destination: register_page(), isActive: $clickregister) {
+                        EmptyView()
+                    }
                 }
             }
         }
@@ -92,22 +95,94 @@ struct AppContentView: View {
 
 struct register_page: View{
     @State private var offsetposition = CGSize.zero
+    @State private var check = CGFloat.zero
+    @State private var jump = false
     var body: some View{
+        NavigationView {
+            ZStack{
+                Text("Welcome to the registration page").bold().position(x:190,y:0).font(.custom("Didot", size: 30))
+                //arrow image which allows swipe
+                Image("arrow")
+                    .resizable()
+                    .scaledToFit()
+                    .animation(.spring())
+                    .padding(EdgeInsets.init(top: 0, leading: 14, bottom: 100, trailing: 0)).offset(x: offsetposition.width).gesture(DragGesture()
+                        .onChanged{ value in self.offsetposition = value.translation}
+                        .onEnded{ value in
+                            self.check = self.offsetposition.width
+                            self.jump = true
+                            self.offsetposition = CGSize.zero
+                        }
+                )
+                NavigationLink(destination: jumped_register_page(), isActive: $jump) {
+                    EmptyView()
+                }
+            }.frame(maxWidth: .infinity)
+        }
+    }
+    //need to fix later
+    func needjump(position:CGFloat) -> AnyView {
+        if position > 200 {
+            self.jump = true
+        }
+        return AnyView(EmptyView())
+    }
+}
+
+
+
+//if arrow moved at least 200 pixels, then change jump variable to true and jump to the true registration page
+struct jumped_register_page: View {
+    @State private var username: String = ""
+    @State private var password: String = ""
+    @State private var complete = false
+    var body: some View {
         ZStack{
-            Text("Welcome to the registration page").bold().position(x:190,y:90).font(.custom("Didot", size: 30))
-            Image("arrow")
-                .resizable()
-                .scaledToFit()
-                .animation(.spring())
-                .padding(EdgeInsets.init(top: 30, leading: 14, bottom: 0, trailing: 0)).offset(x: offsetposition.width).gesture(DragGesture().onChanged{ value in self.offsetposition = value.translation}
-            .onEnded{ value in self.offsetposition = CGSize.zero}
-            )
-        }.frame(maxWidth: .infinity)
+            Rectangle()
+                .fill(Color.white)
+                .frame(width: 300, height: 400)
+            Text("Register Information")
+                .padding(EdgeInsets.init(top: 0, leading: 14, bottom: 350, trailing: 0))
+                .font(.custom("Didot", size: 20))
+                .foregroundColor(Color(red: 47/255, green: 79/255, blue: 79/255))
+            Text("Username:")
+                .padding(EdgeInsets.init(top: 0, leading: 0, bottom: 260, trailing: 200))
+                .font(.custom("Didot", size: 15))
+                .foregroundColor(Color(red: 139/255, green: 69/255, blue: 19/255))
+            TextField("", text: $username)
+                .padding(EdgeInsets.init(top: 0, leading: 15, bottom: 200, trailing: 15))
+                .frame(width:300,height:30).textFieldStyle(RoundedBorderTextFieldStyle())
+            Text("Password:")
+                .padding(EdgeInsets.init(top: 0, leading: 0, bottom: 130, trailing: 200))
+                .font(.custom("Didot", size: 15))
+                .foregroundColor(Color(red: 139/255, green: 69/255, blue: 19/255))
+            TextField("", text: $password)
+                .padding(EdgeInsets.init(top: 0, leading: 15, bottom: 70, trailing: 15))
+                .frame(width:300,height:30).textFieldStyle(RoundedBorderTextFieldStyle())
+            Text("Confirm Password:")
+                .padding(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 140))
+                .font(.custom("Didot", size: 15))
+                .foregroundColor(Color(red: 139/255, green: 69/255, blue: 19/255))
+            TextField("", text: $password)
+                .padding(EdgeInsets.init(top: 70, leading: 15, bottom: 0, trailing: 15))
+                .frame(width:300,height:30).textFieldStyle(RoundedBorderTextFieldStyle())
+            Button(action: {
+                self.complete = true
+            }) {
+                Text("Register").frame(maxWidth:150,maxHeight: 40).background(Color.blue).foregroundColor(Color.white).cornerRadius(10)
+            }.frame(maxHeight:40)
+            .padding(EdgeInsets.init(top: 240, leading: 0, bottom: 0, trailing: 0))
+            
+            
+        }.frame(maxWidth: .infinity,maxHeight: .infinity)
+         .background(Color(red: 102/255, green: 205/255, blue: 170/255))
+            .navigationBarTitle("")
+            .navigationBarHidden(true)
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        register_page()
+        jumped_register_page()
     }
 }

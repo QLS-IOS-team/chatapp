@@ -13,6 +13,12 @@ struct chatmessage:Hashable{
     var color: Color
 }
 
+struct friend:Hashable{
+    var name: String
+    var picture: String
+}
+
+
 struct ContentView: View {
     @State var composedMessage: String = ""
     @EnvironmentObject var chatController: ChatController
@@ -21,7 +27,7 @@ struct ContentView: View {
             List {
                 ForEach(chatController.message, id: \.self) { msg in
                    Group {
-                      Text(msg.message)
+                    Text(msg.message)
                          .bold()
                          .foregroundColor(Color.white)
                          .padding(10)
@@ -46,6 +52,58 @@ struct ContentView: View {
     }
 }
 
+
+struct chat_list: View {
+    @EnvironmentObject var friend_list: friendlist
+    @State var clickoption = false
+    var body: some View {
+        NavigationView{
+            List {
+                ForEach(friend_list.friendList, id: \.self) { msg in
+                   Group {
+                    ZStack {
+                        Image(msg.picture).resizable().frame(width:55,height:60,alignment: .center)
+                            .padding(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 90))
+                        Text(msg.name)
+                        .frame(alignment:.top)
+                        .padding(EdgeInsets.init(top: 0, leading: 50, bottom: 30, trailing: 0))
+                        .font(.custom("Didot", size: 20))
+                    }
+                   }.frame(height:70)
+                }
+            }
+            .overlay(Button(action:
+            {self.clickoption = true}) {
+                Rectangle().fill(Color(red: 152/255, green: 251/255, blue: 152/255)).frame(width:40,height: 70)
+                    .padding(EdgeInsets.init(top: 0, leading: 330, bottom: 0, trailing: 0))
+                    .overlay(Text("+")
+                        .padding(EdgeInsets.init(top: 0, leading: 334, bottom: 5, trailing: 0))
+                        .font(.custom("Arial Black", size: 50))
+                        .foregroundColor(Color(red: 210/255, green: 105/255, blue: 30/255)))
+            }).navigationBarTitle("")
+            .navigationBarHidden(true)
+            NavigationLink(destination: add_friend_page(), isActive: $clickoption) {
+            EmptyView()
+            }
+        }
+    }
+    func settotrue() {
+        self.clickoption = true
+    }
+    
+}
+
+struct add_friend_page: View{
+    var body: some View {
+        List{
+            HStack {
+                Text("Add friend")
+                Text(">>>")
+                .padding(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+            }
+        }
+    }
+}
 struct AppContentView: View {
 
     @State var signInSuccess = false
@@ -56,9 +114,9 @@ struct AppContentView: View {
     var body: some View {
         NavigationView {
             ZStack{
-                Image("qls").resizable().scaledToFit().position(x:187,y:10)
+                Image("qls").resizable().frame(width:370,height:300).padding(EdgeInsets.init(top: 0, leading: 0, bottom: 380, trailing: 0))
                 VStack {
-                    Text("Welcome to the user log in page").foregroundColor(Color.blue).padding(EdgeInsets.init(top: 120, leading: 0, bottom: 10, trailing: 0))
+                    Text("Welcome to the user log in page").foregroundColor(Color.blue).padding(EdgeInsets.init(top: 270, leading: 0, bottom: 0, trailing: 0))
                     HStack {
                         Text("Username").font(.callout).bold().padding(EdgeInsets.init(top: 0, leading: 14, bottom: 0, trailing: 0))
                         TextField("", text: $username).textFieldStyle(RoundedBorderTextFieldStyle())
@@ -79,15 +137,15 @@ struct AppContentView: View {
                     }) {
                         Text("Register")
                     }.padding(EdgeInsets.init(top: 0, leading: 0, bottom: 30, trailing: 0))
-                    NavigationLink(destination: ContentView()
-                    .environmentObject(ChatController()), isActive: $showview) {
+                    NavigationLink(destination: chat_list().environmentObject(friendlist()), isActive: $showview) {
                         EmptyView()
                     }
                     NavigationLink(destination: register_page(), isActive: $clickregister) {
                         EmptyView()
                     }
                 }
-            }
+            }/*.navigationBarTitle("")
+            .navigationBarHidden(true)*/
         }
         
     }
@@ -118,6 +176,8 @@ struct register_page: View{
                     EmptyView()
                 }
             }.frame(maxWidth: .infinity)
+                .navigationBarTitle("")
+            .navigationBarHidden(true)
         }
     }
     //need to fix later
@@ -174,15 +234,19 @@ struct jumped_register_page: View {
             .padding(EdgeInsets.init(top: 240, leading: 0, bottom: 0, trailing: 0))
             
             
-        }.frame(maxWidth: .infinity,maxHeight: .infinity)
+        }.navigationBarTitle("")
+        .navigationBarHidden(true)
+        .frame(maxWidth: .infinity,maxHeight: .infinity)
          .background(Color(red: 102/255, green: 205/255, blue: 170/255))
-            .navigationBarTitle("")
-            .navigationBarHidden(true)
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        jumped_register_page()
+        //chat_list().environmentObject(friendlist())
+        //add_friend_page()
+        AppContentView()
+        //ContentView()
+        //.environmentObject(ChatController()
     }
 }

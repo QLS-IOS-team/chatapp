@@ -53,11 +53,24 @@ struct ContentView: View {
 }
 
 
+struct overall_chat_control: View {
+    @State var clicked = false
+    var body: some View {
+        return Group {
+            if !clicked{
+                chat_list(clicked: $clicked).environmentObject(friendlist())
+            } else {
+                add_friend_page()
+            }
+        }
+    }
+}
+
 struct chat_list: View {
     @EnvironmentObject var friend_list: friendlist
-    @State var clickoption = false
+    @Binding var clicked: Bool
     var body: some View {
-        NavigationView{
+        //NavigationView{
             List {
                 ForEach(friend_list.friendList, id: \.self) { msg in
                    Group {
@@ -73,7 +86,7 @@ struct chat_list: View {
                 }
             }
             .overlay(Button(action:
-            {self.clickoption = true}) {
+            {self.clicked = true}) {
                 Rectangle().fill(Color(red: 152/255, green: 251/255, blue: 152/255)).frame(width:40,height: 70)
                     .padding(EdgeInsets.init(top: 0, leading: 330, bottom: 0, trailing: 0))
                     .overlay(Text("+")
@@ -82,28 +95,52 @@ struct chat_list: View {
                         .foregroundColor(Color(red: 210/255, green: 105/255, blue: 30/255)))
             }).navigationBarTitle("")
             .navigationBarHidden(true)
-            NavigationLink(destination: add_friend_page(), isActive: $clickoption) {
+            /*NavigationLink(destination: add_friend_page(), isActive: $clickoption) {
             EmptyView()
-            }
-        }
+            }*/
+        //}
     }
     func settotrue() {
-        self.clickoption = true
+        self.clicked = true
     }
     
 }
 
 struct add_friend_page: View{
+    @State var spin = false
+    @State var isAnimating = false
     var body: some View {
-        List{
-            HStack {
-                Text("Add friend")
-                Text(">>>")
-                .padding(EdgeInsets.init(top: 0, leading: 0, bottom: 0, trailing: 0))
-            }
+        ZStack {
+            List{
+                HStack {
+                    Image("add_friend_icon").resizable().frame(width:60,height:70)
+                    Text("Add friend")
+                        .frame(width:180,height:80)
+                        .font(.custom("Didot", size: 30))
+
+                    Button(
+                        action: {self.spin.toggle()})
+                    {
+                        if(self.spin) {
+                            Text("🏀")
+                            .font(.custom("Times New Roman", size: 45))
+                            .padding(EdgeInsets.init(top: 0, leading: 10, bottom: 0, trailing: 0))
+                            
+                                
+                        } else {
+                            Text("🏈")
+                            .font(.custom("Times New Roman", size: 45))
+                            .padding(EdgeInsets.init(top: 0, leading: 10, bottom: 0, trailing: 0))
+                        }
+                    }
+                }
+            }.navigationBarTitle("")
+                .navigationBarHidden(true)
         }
     }
 }
+
+
 struct AppContentView: View {
 
     @State var signInSuccess = false
@@ -111,6 +148,7 @@ struct AppContentView: View {
     @State var clickregister = false
     @State var username: String = ""
     @State var password: String = ""
+    @State var clicked = false
     var body: some View {
         NavigationView {
             ZStack{
@@ -137,15 +175,15 @@ struct AppContentView: View {
                     }) {
                         Text("Register")
                     }.padding(EdgeInsets.init(top: 0, leading: 0, bottom: 30, trailing: 0))
-                    NavigationLink(destination: chat_list().environmentObject(friendlist()), isActive: $showview) {
+                    NavigationLink(destination: overall_chat_control(), isActive: $showview) {
                         EmptyView()
                     }
                     NavigationLink(destination: register_page(), isActive: $clickregister) {
                         EmptyView()
                     }
                 }
-            }/*.navigationBarTitle("")
-            .navigationBarHidden(true)*/
+            }.navigationBarTitle("")
+            .navigationBarHidden(true)
         }
         
     }
@@ -242,10 +280,11 @@ struct jumped_register_page: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    @State var addfriend = false
     static var previews: some View {
         //chat_list().environmentObject(friendlist())
-        //add_friend_page()
-        AppContentView()
+        add_friend_page()
+        //AppContentView()
         //ContentView()
         //.environmentObject(ChatController()
     }
